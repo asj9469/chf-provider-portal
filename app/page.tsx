@@ -1,11 +1,20 @@
 "use client"
 import { useRouter } from "next/navigation";
+import { useState } from 'react';
 
 export default function Home() {
   
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const handleClick = () => {
-    router.push(`/patients`);
+    if (email === 'practitioner@hospital.com' && password === 'chf') {
+      // Use router.push for redirection
+      router.push('/patients');
+    } else {
+      alert('Incorrect email or password');
+    }
+    
   };
 
   return (
@@ -23,6 +32,8 @@ export default function Home() {
               type="email"
               id="Email"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 p-3 w-full rounded-md border bg-white text-md text-gray-700 shadow-sm"
             />
           </div>
@@ -33,6 +44,8 @@ export default function Home() {
               type="password"
               id="Password"
               name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="mt-1 p-3 w-full rounded-md border bg-white text-md text-gray-700 shadow-sm"
             />
           </div>
