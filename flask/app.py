@@ -1,12 +1,8 @@
 from flask import Flask, request, jsonify
+from openai import OpenAI
 import pandas as pd
 import torch
 import torch.nn as nn
-# import logging
-
-# Set up logging
-# logging.basicConfig(level=logging.DEBUG)
-
 # Set device
 device = (
     "cuda" if torch.cuda.is_available()
@@ -26,7 +22,6 @@ class NeuralNetwork(nn.Module):
             nn.Sigmoid(),
             nn.Linear(30, 1),
         )
-
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_stack(x)
@@ -57,6 +52,35 @@ def normalize_input(data):
             data[column] = data[column] / max_abs_values[column]
     return data
 
+def explanation(json_info, score):
+    client = OpenAI()
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are doctor who knows about symptoms for Conjestive Heart Failure."},
+            {
+                "role": "user",
+                "content": f"""The patient information is the following, 
+                Age: {json_info["age"]},
+                Weight_Change_kg: {json_info["Weight_Change_kg"]},
+                Systolic_BP_mmHg: {json_info["Systolic_BP_mmHg"]},
+                Diastolic_BP_mmHg: {json_info["Diastolic_BP_mmHg"]},
+                Heart_Rate_bpm: {json_info["Heart_Rate_bpm"]},
+                Walking_Distance_steps: {json_info["Walking_Distance_steps"]},
+                Fluid_Intake_liters: {json_info["Fluid_Intake_liters"]}
+
+                The patient has a severity score of the following out of 100: {100*min(score[0], 100)}%
+
+                Tell me consisly why the patient has the score they have based on the above information.
+                """
+            }
+        ]
+    )
+
+
+    return str(completion.choices[0].message.content)
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -81,11 +105,15 @@ def predict():
             output = model(input_tensor)
 
         # Convert output tensor to list and return as JSON
-        response = output.cpu().numpy().tolist()  # Move output to CPU before converting
+        response_data = output.cpu().numpy().tolist()  # Move output to CPU before converting
+        score = response_data[0]
+        response = {
+            "data": response_data,
+            "explanation": explanation(data, score)  # Add the explanation key-value pair
+        }
         return jsonify(response)
 
     except Exception as e:
-        # Log the exception and return an error response
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
