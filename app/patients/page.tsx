@@ -8,23 +8,7 @@ export default async function Patients() {
     const cursor = await client.db("admin").collection("actual_patients").find();
     const patients = await cursor.toArray()
 
-    const serializedPatients: Patient[] = patients.map((patient: any) => ({
-      patientId: patient['Patient ID'],
-      name: patient['Name'],
-      age: patient['Age'],
-      weight_change: patient['Weight'],
-      systolicBP: patient['Systolic Blood Pressure (mmHg)'],
-      diastolicBP: patient['Diastolic Blood Pressure (mmHg)'],
-      heartRate: patient['Average Resting Heart Rate (bpm)'],
-      walkingDistance: patient['Walking Distance (Steps)'],
-      fluidIntake: patient['Fluid Intake Liters (Liters per Day)'],
-      severity: patient['Severity'],
-      explanation: patient['Explanation'],
-      date: patient['Date'] ? patient['Date'].toString() : null, // Convert Date to string
-    }));
-
-    const data = JSON.parse(JSON.stringify(serializedPatients))
-    // console.log(data)
+    const data = JSON.parse(JSON.stringify(patients))
   return (
     <>
         <NavigationBar/>
@@ -34,7 +18,7 @@ export default async function Patients() {
             we can't have server side stuff and client side stuff happening in the same page (that's just how Next.js works)
             if you look at the patientsList.tsx, you'll see that it's marked as a client side component on line 1
         */}
-        <PatientsList patients={data}/>
+        <PatientsList patientData={data}/>
     </>
   );
 }

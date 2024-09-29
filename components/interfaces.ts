@@ -15,8 +15,9 @@ export interface Patient {
   }
 
   export interface PatientProps {
-    patientData: Patient[]
+    patientData: Patient[];
   }
+  
   export interface PatientDetailsProps {
     patientId: string;
     patientData: Patient[]; // patientData is typed as an array of Patient
