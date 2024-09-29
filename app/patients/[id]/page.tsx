@@ -12,13 +12,24 @@ export default async function PatientDisplay({ params }: { params: { id: string 
     const patients = await cursor.toArray()
     const data = JSON.parse(JSON.stringify(patients))
     
-    
-// const patient = patients.find((p) => p.id === patientId);
+    const filteredPatients = data.filter((p: any) => p['Patient ID'] === parseInt(patientId));
+
+    // If no patient is found, return a "Patient Not Found" message
+    if (filteredPatients.length === 0) {
+      return (
+        <>
+          <NavigationBar />
+          <div className="min-w-full py-4">
+            <h1 className="flex justify-center text-2xl font-bold my-10">Patient Not Found</h1>
+          </div>
+        </>
+      );
+    }
 
     return (
       <>
         <NavigationBar/>
-        <PatientDetails patientId={patientId} patientData={data}/>
+        <PatientDetails patientId={patientId} patientData={filteredPatients}/>
       </>
     );
 }

@@ -9,7 +9,7 @@ import { Patient, PatientDetailsProps } from '@/components/interfaces';
 export default function PatientDetails({patientId, patientData}: PatientDetailsProps) {
 
     const router = useRouter();
-    const patient = patientData.find((p:any) => p.id === patientId);
+    // const patient = patientData.find((p:any) => p.id === patientId);
     
     const serializedPatients: Patient[] = patientData.map((patient: any) => ({
       patientId: patient['Patient ID'],
@@ -28,15 +28,15 @@ export default function PatientDetails({patientId, patientData}: PatientDetailsP
 
     console.log(serializedPatients[0].age)
 
-    if (!patient) {
-      return (
-        <>
-            <div className="min-w-full py-4">
-                <h1 className="flex justify-center text-2xl font-bold my-10">Patient Not Found</h1>
-            </div>
-        </>
-      );
-    }
+    // if (!patient) {
+    //   return (
+    //     <>
+    //         <div className="min-w-full py-4">
+    //             <h1 className="flex justify-center text-2xl font-bold my-10">Patient Not Found</h1>
+    //         </div>
+    //     </>
+    //   );
+    // }
     
 
     return (
@@ -49,7 +49,7 @@ export default function PatientDetails({patientId, patientData}: PatientDetailsP
         </span>
 
         <h1 className="text-2xl font-bold text-center mt-8">
-                Detailed Report for {patient.name}
+                Detailed Report for {serializedPatients[0].name}
         </h1>
         
         <div className="mt-8 grid grid-cols-6 gap-6">
@@ -58,17 +58,17 @@ export default function PatientDetails({patientId, patientData}: PatientDetailsP
                 <dl className="-my-3 divide-y divide-gray-100 text-sm">
                   <div className="grid grid-cols-1 gap-1 p-3 odd:bg-gray-100 sm:grid-cols-3 sm:gap-4">
                     <dt className="font-medium text-gray-900">Name</dt>
-                    <dd className="text-gray-700 sm:col-span-2">{patient.name}</dd>
+                    <dd className="text-gray-700 sm:col-span-2">{serializedPatients[0].name}</dd>
                   </div>
 
                   <div className="grid grid-cols-1 gap-1 p-3 odd:bg-gray-100 sm:grid-cols-3 sm:gap-4">
                     <dt className="font-medium text-gray-900">Severity Level</dt>
-                    <dd className="text-gray-700 sm:col-span-2">{patient.severity}</dd>
+                    <dd className="text-gray-700 sm:col-span-2">{serializedPatients[0].severity}</dd>
                   </div>
 
                   <div className="grid grid-cols-1 gap-1 p-3 odd:bg-gray-100 sm:grid-cols-3 sm:gap-4">
                     <dt className="font-medium text-gray-900">Explanation</dt>
-                    <dd className="text-gray-700 sm:col-span-2">{patient.explanation}</dd>
+                    <dd className="text-gray-700 sm:col-span-2">{serializedPatients[0].explanation}</dd>
                   </div>
                 </dl>
               </div>
