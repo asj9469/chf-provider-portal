@@ -5,11 +5,13 @@ import pandas as pd
 import torch
 import torch.nn as nn
 
+from pymongo import MongoClient
 
-client = MongoClient("mongodb+srv://hackgt:hackgt@hackgtcluster.fltr4.mongodb.net/?retryWrites=true&w=majority&appName=HackGTCluster")  # Update the URI as needed
-db = client["admin"]  # Replace with your database name
-collection = db["actual_patients"]  # Replace with your collection name
+client = MongoClient("mongodb+srv://hackgt:hackgt@hackgtcluster.fltr4.mongodb.net/?retryWrites=true&w=majority&appName=HackGTCluster")
+db = client['admin']
+collection = db['actual_patients']
 
+# Set device
 
 device = (
     "cuda" if torch.cuda.is_available()
@@ -157,19 +159,24 @@ def typeform_webhook():
             "data": response_data,
             "explanation": explanation(data, score)  # Add the explanation key-value pair
         }
-        res['Severity'] = min(response['data'][0][0], 1)
-        res['Explanation'] = response['explanation']
+# <<<<<<< mongodb
+        collection.insert_one(response)
+        return jsonify(response)
+# =======
+#         res['Severity'] = min(response['data'][0][0], 1)
+#         res['Explanation'] = response['explanation']
 
-        print(res)
+#         print(res)
 
-        result = collection.insert_one(res)  
-
-
+#         result = collection.insert_one(res)  
 
 
 
 
-        return jsonify({'status': 'success', 'message': 'Data received'}), 200
+
+
+#         return jsonify({'status': 'success', 'message': 'Data received'}), 200
+# >>>>>>> main
 
     except Exception as e:
         print(f"Error processing data: {e}")

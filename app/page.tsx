@@ -8,12 +8,13 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const handleClick = () => {
-    if (email === 'practitioner@hospital.com' && password === 'chf') {
-      // Use router.push for redirection
-      router.push('/patients');
-    } else {
-      alert('Incorrect email or password');
-    }
+    // if (email === 'practitioner@hospital.com' && password === 'chf') {
+    //   // Use router.push for redirection
+    //   router.push('/patients');
+    // } else {
+    //   alert('Incorrect email or password');
+    // }
+    router.push('/patients');
     
   };
 
