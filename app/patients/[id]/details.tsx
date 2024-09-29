@@ -4,10 +4,9 @@ import React from 'react'
 import NavigationBar from "@/components/NavigationBar";
 import { useRouter } from "next/navigation";
 
-// import clientPromise from '@/lib/mongodb';
-// import { ObjectId } from 'mongodb';
+import { PatientDetailsProps } from '@/components/interfaces';
 
-export default function PatientDetails({patientId, patientData}: any) {
+export default function PatientDetails({patientId, patientData}: PatientDetailsProps) {
 
     const router = useRouter();
     const patient = patientData.find((p:any) => p.id === patientId);
@@ -20,6 +19,7 @@ export default function PatientDetails({patientId, patientData}: any) {
         </>
       );
     }
+    
 
     return (
       <>

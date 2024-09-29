@@ -3,6 +3,12 @@ from openai import OpenAI
 import pandas as pd
 import torch
 import torch.nn as nn
+from pymongo import MongoClient
+
+client = MongoClient("mongodb+srv://hackgt:hackgt@hackgtcluster.fltr4.mongodb.net/?retryWrites=true&w=majority&appName=HackGTCluster")
+db = client['admin']
+collection = db['actual_patients']
+
 # Set device
 device = (
     "cuda" if torch.cuda.is_available()
@@ -111,6 +117,7 @@ def predict():
             "data": response_data,
             "explanation": explanation(data, score)  # Add the explanation key-value pair
         }
+        collection.insert_one(response)
         return jsonify(response)
 
     except Exception as e:

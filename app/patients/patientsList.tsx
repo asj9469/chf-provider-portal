@@ -1,7 +1,8 @@
 "use client"
 import { useRouter } from "next/navigation";
+import { PatientProps } from "@/components/interfaces";
 
-export default function PatientsList({patients}:any) {
+export default function PatientsList({patientData}: PatientProps) {
   
   const router = useRouter();
   const handleClick = (id: number) => {
@@ -16,7 +17,7 @@ export default function PatientsList({patients}:any) {
       <div className="mt-8 grid grid-cols-6 gap-6">
         <div className="col-start-2 col-end-6 inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div className="w-full px-4 sm:px-6 lg:px-8">
-            {patients.map((patient: any) => (
+            {patientData.map((patient: any) => (
             <div
                 key={patient.id}
                 className="cursor-pointer border rounded-md my-4 p-6 lg:max-w-2xl mx-auto flex justify-between items-center bg-white hover:bg-gray-100"
