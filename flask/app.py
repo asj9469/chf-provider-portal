@@ -115,6 +115,8 @@ def typeform_webhook():
                 field_value = answer.get('text')
             elif answer['type'] == 'number':
                 field_value = answer.get('number')
+            elif answer['type'] == 'date':
+                field_value = answer.get('date')
             
             # Find the corresponding field title using field_id
             for field in fields:
@@ -158,8 +160,10 @@ def typeform_webhook():
         res['Severity'] = min(response['data'][0][0], 1)
         res['Explanation'] = response['explanation']
 
+        print(res)
 
         result = collection.insert_one(res)  
+
 
 
 
