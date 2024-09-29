@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation";
-import { PatientProps } from "@/components/interfaces";
+import { Patient, PatientProps } from "@/components/interfaces";
 
 export default function PatientsList({patientData}: PatientProps) {
   
@@ -8,6 +8,21 @@ export default function PatientsList({patientData}: PatientProps) {
   const handleClick = (id: number) => {
     router.push(`/patients/${id}`);
   };
+
+  const serializedPatients: Patient[] = patientData.map((patient: any) => ({
+    patientId: patient['Patient ID'],
+    name: patient['Name'],
+    age: patient['Age'],
+    weight_change: patient['Weight'],
+    systolicBP: patient['Systolic Blood Pressure (mmHg)'],
+    diastolicBP: patient['Diastolic Blood Pressure (mmHg)'],
+    heartRate: patient['Average Resting Heart Rate (bpm)'],
+    walkingDistance: patient['Walking Distance (Steps)'],
+    fluidIntake: patient['Fluid Intake Liters (Liters per Day)'],
+    severity: patient['Severity'],
+    explanation: patient['Explanation'],
+    date: patient['Date'] ? patient['Date'].toString() : null, // Convert Date to string
+  }));
 
   return (
     <>
@@ -17,7 +32,7 @@ export default function PatientsList({patientData}: PatientProps) {
       <div className="mt-8 grid grid-cols-6 gap-6">
         <div className="col-start-2 col-end-6 inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div className="w-full px-4 sm:px-6 lg:px-8">
-            {patientData.map((patient: any) => (
+            {/* {patientData.map((patient: any) => (
             <div
                 key={patient.id}
                 className="cursor-pointer border rounded-md my-4 p-6 lg:max-w-2xl mx-auto flex justify-between items-center bg-white hover:bg-gray-100"
@@ -28,7 +43,7 @@ export default function PatientsList({patientData}: PatientProps) {
                 Severity Level: {patient.severity}
                 </span>
             </div>
-            ))}
+            ))} */}
         </div>
         </div>
       </div>

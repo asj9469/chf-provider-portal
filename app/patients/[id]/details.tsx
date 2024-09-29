@@ -4,12 +4,30 @@ import React from 'react'
 import NavigationBar from "@/components/NavigationBar";
 import { useRouter } from "next/navigation";
 
-import { PatientDetailsProps } from '@/components/interfaces';
+import { Patient, PatientDetailsProps } from '@/components/interfaces';
 
 export default function PatientDetails({patientId, patientData}: PatientDetailsProps) {
 
     const router = useRouter();
     const patient = patientData.find((p:any) => p.id === patientId);
+    
+    const serializedPatients: Patient[] = patientData.map((patient: any) => ({
+      patientId: patient['Patient ID'],
+      name: patient['Name'],
+      age: patient['Age'],
+      weight_change: patient['Weight'],
+      systolicBP: patient['Systolic Blood Pressure (mmHg)'],
+      diastolicBP: patient['Diastolic Blood Pressure (mmHg)'],
+      heartRate: patient['Average Resting Heart Rate (bpm)'],
+      walkingDistance: patient['Walking Distance (Steps)'],
+      fluidIntake: patient['Fluid Intake Liters (Liters per Day)'],
+      severity: patient['Severity'],
+      explanation: patient['Explanation'],
+      date: patient['Date'] ? patient['Date'].toString() : null, // Convert Date to string
+    }));
+
+    console.log(serializedPatients[0].age)
+
     if (!patient) {
       return (
         <>

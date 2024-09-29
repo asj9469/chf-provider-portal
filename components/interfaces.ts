@@ -3,7 +3,7 @@ export interface Patient {
     patientId: number;
     name: string;
     age: number;
-    weight: number;
+    weight_change: string;
     systolicBP: number;
     diastolicBP: number;
     heartRate: number;
@@ -11,6 +11,7 @@ export interface Patient {
     fluidIntake: number;
     severity: number;
     explanation: string;
+    date: string;
   }
 
   export interface PatientProps {

@@ -1,14 +1,30 @@
 import NavigationBar from "@/components/NavigationBar";
 import PatientsList from "./patientsList";
 import connect from '@/lib/mongodb/index'
+import { Patient } from "@/components/interfaces";
 
 export default async function Patients() {
     const client = await connect
     const cursor = await client.db("admin").collection("actual_patients").find();
     const patients = await cursor.toArray()
 
-    const data = JSON.parse(JSON.stringify(patients))
-    
+    const serializedPatients: Patient[] = patients.map((patient: any) => ({
+      patientId: patient['Patient ID'],
+      name: patient['Name'],
+      age: patient['Age'],
+      weight_change: patient['Weight'],
+      systolicBP: patient['Systolic Blood Pressure (mmHg)'],
+      diastolicBP: patient['Diastolic Blood Pressure (mmHg)'],
+      heartRate: patient['Average Resting Heart Rate (bpm)'],
+      walkingDistance: patient['Walking Distance (Steps)'],
+      fluidIntake: patient['Fluid Intake Liters (Liters per Day)'],
+      severity: patient['Severity'],
+      explanation: patient['Explanation'],
+      date: patient['Date'] ? patient['Date'].toString() : null, // Convert Date to string
+    }));
+
+    const data = JSON.parse(JSON.stringify(serializedPatients))
+    // console.log(data)
   return (
     <>
         <NavigationBar/>
