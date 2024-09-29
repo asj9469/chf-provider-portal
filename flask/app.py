@@ -1,9 +1,16 @@
 from flask import Flask, request, jsonify
 from openai import OpenAI
+from pymongo import MongoClient
 import pandas as pd
 import torch
 import torch.nn as nn
-# Set device
+
+
+client = MongoClient("mongodb+srv://hackgt:hackgt@hackgtcluster.fltr4.mongodb.net/?retryWrites=true&w=majority&appName=HackGTCluster")  # Update the URI as needed
+db = client["admin"]  # Replace with your database name
+collection = db["actual_patients"]  # Replace with your collection name
+
+
 device = (
     "cuda" if torch.cuda.is_available()
     else "mps" if torch.backends.mps.is_available()
@@ -42,7 +49,6 @@ max_abs_values = {
     "Walking_Distance_steps": 10000.0,
     "Fluid_Intake_liters": 3.906368,
 }
-
 app = Flask(__name__)
 
 def normalize_input(data):
@@ -81,26 +87,64 @@ def explanation(json_info, score):
     return str(completion.choices[0].message.content)
 
 
-@app.route('/predict', methods=['POST'])
-def predict():
+
+@app.route('/typeform-webhook', methods=['POST'])
+def typeform_webhook():
     try:
-        # Get JSON data from the request
-        data = request.get_json(force=True)
+        # Get the data from the webhook request
+        data = request.json
 
-        # Check if the received data is valid
-        if not isinstance(data, dict):
-            return jsonify({"error": "Invalid input format, expected a JSON object."}), 400
+        form_response = data.get('form_response', {})
+        
+        # Get form fields definition
+        fields = form_response.get('definition', {}).get('fields', [])
 
-        # Convert input JSON to DataFrame
+        # Get the answers
+        answers = form_response.get('answers', [])
+        
+        # Initialize an empty dictionary to store answers mapped by field titles
+        response_data = {}
+
+        # Extract data from answers
+        for answer in answers:
+            field_id = answer['field']['id']
+            field_value = None
+            
+            # Determine the type of answer (number, text, etc.)
+            if answer['type'] == 'text':
+                field_value = answer.get('text')
+            elif answer['type'] == 'number':
+                field_value = answer.get('number')
+            
+            # Find the corresponding field title using field_id
+            for field in fields:
+                if field['id'] == field_id:
+                    field_title = field['title']
+                    response_data[field_title] = field_value
+                    break
+
+        # For debugging purposes, print the incoming data
+        # print("Received data from Typeform:", data)
+
+        data = {
+            "age": response_data['Age'],
+            "Weight_Change_kg": response_data['Weight'],
+            "Systolic_BP_mmHg":  response_data['Systolic Blood Pressure (mmHg)'],
+            "Diastolic_BP_mmHg": response_data['Diastolic Blood Pressure (mmHg)'],
+            "Heart_Rate_bpm":response_data['Average Resting Heart Rate (bpm)'] ,
+            "Walking_Distance_steps": response_data['Walking Distance (Steps)'] ,
+            "Fluid_Intake_liters": response_data['Fluid Intake Liters (Liters per Day)'],
+        }
+
+
+        res = response_data
+
         df_new_input = pd.DataFrame([data])  # Wrap in a list to create a DataFrame
 
-        # Normalize the new input
         df_normalized = normalize_input(df_new_input)
 
-        # Convert normalized DataFrame to tensor
         input_tensor = torch.tensor(df_normalized.values, dtype=torch.float32).to(device)
 
-        # Make predictions using the model
         with torch.no_grad():
             output = model(input_tensor)
 
@@ -111,11 +155,22 @@ def predict():
             "data": response_data,
             "explanation": explanation(data, score)  # Add the explanation key-value pair
         }
-        return jsonify(response)
+        res['Severity'] = min(response['data'][0][0], 1)
+        res['Explanation'] = response['explanation']
+
+
+        result = collection.insert_one(res)  
+
+
+
+
+
+        return jsonify({'status': 'success', 'message': 'Data received'}), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Error processing data: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True, port=5000)
 
