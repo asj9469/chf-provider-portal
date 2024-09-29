@@ -6,25 +6,25 @@ import { Patient } from "@/components/interfaces";
 function getUniquePatientsById(patients: any[]) {
   const uniquePatientsMap = new Map();
 
-  patients.forEach((patient:Patient) => {
-      const patientId = patient.patientId;
-      const patientDate = new Date(patient.date);
-      console.log(patient.date)
-
-      uniquePatientsMap.set(patientId, patient);
+  patients.forEach((patient:any) => {
+      const patientId = patient['Patient ID'];
+      // const patientDate = new Date(patient.date);
+      const patientDate = new Date(patient['Date'])
 
       // If the patient ID is already in the map, check the date
       if (uniquePatientsMap.has(patientId)) {
           const existingPatient = uniquePatientsMap.get(patientId);
-          const existingPatientDate = new Date(existingPatient.date);
+          const existingPatientDate = new Date(existingPatient['Date']);
 
           // Keep the patient with the most recent date
-          if (patientDate > existingPatientDate) {
+          if (patientDate >= existingPatientDate) {
               uniquePatientsMap.set(patientId, patient);
-          }
-      }
+          } 
+      }else {
+        // If the patient ID is not in the map, add it (including single occurrences)
+        uniquePatientsMap.set(patientId, patient);
+    }
   });
-
   return Array.from(uniquePatientsMap.values());
 }
 
@@ -38,8 +38,6 @@ export default async function Patients() {
 
     const data = JSON.parse(JSON.stringify(patients));
     const uniquePatients = getUniquePatientsById(data);
-    console.log(uniquePatients)
-    console.log()
     
   return (
     <>

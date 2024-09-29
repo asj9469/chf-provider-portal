@@ -8,9 +8,54 @@ import { format } from 'date-fns';
 import 'chartjs-adapter-moment';
 
 const date = new Date();
-const formattedDate = format(date, 'yyyy-MM-dd');
 
 import { Patient, PatientDetailsProps } from '@/components/interfaces';
+type DataPoint = { date: Date; value: number };
+
+function populateArrays(
+  patients: Patient[],
+  weightData: { date: Date, value: number }[],
+  systolicData: { date: Date, value: number }[],
+  diastolicData: { date: Date, value: number }[],
+  heartRateData: { date: Date, value: number }[],
+  walkingDistanceData: { date: Date, value: number }[],
+  fluidData: { date: Date, value: number }[]
+) {
+  patients.forEach(patient => {
+    // const date = new Date(patient['Date'])
+    const date = new Date(patient.date);
+
+    weightData.push({
+      date,
+      value: Number(patient.weight_change),
+    });
+
+    systolicData.push({
+      date,
+      value: patient.systolicBP,
+    });
+
+    diastolicData.push({
+      date,
+      value: patient.diastolicBP,
+    });
+
+    heartRateData.push({
+      date,
+      value: patient.heartRate,
+    });
+
+    walkingDistanceData.push({
+      date,
+      value: patient.walkingDistance,
+    });
+
+    fluidData.push({
+      date,
+      value: patient.fluidIntake,
+    });
+  });
+}
 
 export default function PatientDetails({ patientId, patientData }: PatientDetailsProps) {
   const router = useRouter();
@@ -24,13 +69,12 @@ export default function PatientDetails({ patientId, patientData }: PatientDetail
         .replace(/-\s*/g, '') // Remove hyphen (-) and any spaces after it
         .replace(/\n/g, '<br />'); // Replace \n with <br />
     };
-    
 
     const serializedPatients: Patient[] = patientData.map((patient: any) => ({
       patientId: patient['Patient ID'],
       name: patient['Name'],
       age: patient['Age'],
-      weight_change: patient['Weight'],
+      weight_change: patient['Weight Change'],
       systolicBP: patient['Systolic Blood Pressure (mmHg)'],
       diastolicBP: patient['Diastolic Blood Pressure (mmHg)'],
       heartRate: patient['Average Resting Heart Rate (bpm)'],
@@ -41,51 +85,24 @@ export default function PatientDetails({ patientId, patientData }: PatientDetail
       date: patient['Date'] ? patient['Date'].toString() : null, // Convert Date to string
     }));
 
-    console.log(formatExplanation(serializedPatients[0].explanation))
-    console.log(serializedPatients[0].age)
+    const sortedPatients = serializedPatients.sort((a, b) => {
+      const dateA = new Date(a.date!); // Use the non-null assertion operator (!) since date is a string
+      const dateB = new Date(b.date!);
+      
+      return dateA.getTime() - dateB.getTime(); // Ascending order: older dates first
+    });
 
-    // Sample data for the line graph (you can replace this with actual patient data)
-    const weightData = [
-      { date: new Date('2024-08-01'), value: 75 }, // Starting weight
-      { date: new Date('2024-09-01'), value: 73.5 }, // Weight change over time
-      { date: new Date('2024-09-02'), value: 72.5 },
-      { date: new Date('2024-09-03'), value: 72 },
-    ];
+    // console.log(formatExplanation(serializedPatients[0].explanation))
+    // console.log(serializedPatients[0].age)
 
-    const systolicData = [
-        { date: new Date('2024-08-01'), value: 130 }, // Starting Systolic BP
-        { date: new Date('2024-09-01'), value: 135 },
-        { date: new Date('2024-09-02'), value: 138 },
-        { date: new Date('2024-09-03'), value: 140 },
-    ];
+    const weightData: DataPoint[] = [];
+    const systolicData: DataPoint[] = [];
+    const diastolicData: DataPoint[] = [];
+    const heartRateData: DataPoint[] = [];
+    const walkingDistanceData: DataPoint[] = [];
+    const fluidData: DataPoint[] = [];
 
-    const diastolicData = [
-        { date: new Date('2024-08-01'), value: 85 }, // Starting Diastolic BP
-        { date: new Date('2024-09-01'), value: 90 },
-        { date: new Date('2024-09-02'), value: 92 },
-        { date: new Date('2024-09-03'), value: 95 },
-    ];
-
-    const heartRateData = [
-        { date: new Date('2024-08-01'), value: 75 }, // Starting heart rate
-        { date: new Date('2024-09-01'), value: 80 },
-        { date: new Date('2024-09-02'), value: 78 },
-        { date: new Date('2024-09-03'), value: 82 },
-    ];
-
-    const walkingDistanceData = [
-        { date: new Date('2024-08-01'), value: 3000 }, // Starting walking distance (steps)
-        { date: new Date('2024-09-01'), value: 3500 },
-        { date: new Date('2024-09-02'), value: 4000 },
-        { date: new Date('2024-09-03'), value: 2000 },
-    ];
-
-    const fluidData = [
-        { date: new Date('2024-08-01'), value: 2 }, // Fluid intake (liters)
-        { date: new Date('2024-09-01'), value: 2.5 },
-        { date: new Date('2024-09-02'), value: 3 },
-        { date: new Date('2024-09-03'), value: 2.8 },
-    ];
+    populateArrays(serializedPatients, weightData, systolicData, diastolicData, heartRateData, walkingDistanceData, fluidData);
 
     return (
       <>
@@ -96,7 +113,7 @@ export default function PatientDetails({ patientId, patientData }: PatientDetail
         </span>
 
         <h1 className="text-2xl font-bold text-center mt-8">
-          Detailed Report for {serializedPatients[0].name}
+          Detailed Report for {sortedPatients[sortedPatients.length - 1].name}
         </h1>
 
         <div className="mt-8 grid grid-cols-6 gap-6">
@@ -105,19 +122,19 @@ export default function PatientDetails({ patientId, patientData }: PatientDetail
               <dl className="-my-3 divide-y divide-gray-100 text-sm">
                 <div className="grid grid-cols-1 gap-1 p-3 odd:bg-gray-100 sm:grid-cols-3 sm:gap-4">
                   <dt className="font-medium text-gray-900">Name</dt>
-                  <dd className="text-gray-700 sm:col-span-2">{serializedPatients[0].name}</dd>
+                  <dd className="text-gray-700 sm:col-span-2">{sortedPatients[sortedPatients.length - 1].name}</dd>
                 </div>
 
                 <div className="grid grid-cols-1 gap-1 p-3 odd:bg-gray-100 sm:grid-cols-3 sm:gap-4">
                   <dt className="font-medium text-gray-900">Severity Level</dt>
-                  <dd className="text-gray-700 sm:col-span-2">{serializedPatients[0].severity}</dd>
+                  <dd className="text-gray-700 sm:col-span-2">{formatSeverity(sortedPatients[sortedPatients.length - 1].severity)}</dd>
                 </div>
 
                 <div className="grid grid-cols-1 gap-1 p-3 odd:bg-gray-100 sm:grid-cols-3 sm:gap-4">
                   <dt className="font-medium text-gray-900">Explanation</dt>
                   <dd
                     className="text-gray-700 sm:col-span-2"
-                    dangerouslySetInnerHTML={{ __html: formatExplanation(serializedPatients[0].explanation) }}
+                    dangerouslySetInnerHTML={{ __html: formatExplanation(sortedPatients[sortedPatients.length - 1].explanation) }}
                   />
                 </div>
               

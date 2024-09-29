@@ -23,7 +23,7 @@ export default function PatientsList({patientData}: PatientProps) {
     patientId: patient['Patient ID'],
     name: patient['Name'],
     age: patient['Age'],
-    weight_change: patient['Weight'],
+    weight_change: patient['Weight Change'],
     systolicBP: patient['Systolic Blood Pressure (mmHg)'],
     diastolicBP: patient['Diastolic Blood Pressure (mmHg)'],
     heartRate: patient['Average Resting Heart Rate (bpm)'],
