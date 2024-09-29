@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/mongodb/index.ts", "pages/api/patients.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/mongodb/index.ts", "pages/api/patients.tsx", "app/patients/[id]/LineGraph.js"],
   "exclude": ["node_modules"]
 }

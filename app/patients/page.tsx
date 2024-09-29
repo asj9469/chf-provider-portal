@@ -1,7 +1,6 @@
 import NavigationBar from "@/components/NavigationBar";
 import PatientsList from "./patientsList";
 import connect from '@/lib/mongodb/index'
-import { Patient } from "@/components/interfaces";
 
 function getUniquePatientsById(patients: any[]) {
   const uniquePatientsMap = new Map();

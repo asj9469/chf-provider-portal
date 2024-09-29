@@ -1,15 +1,11 @@
 "use client";
 
 import React from 'react'
-import NavigationBar from "@/components/NavigationBar";
 import { useRouter } from "next/navigation";
 import LineGraph from './LineGraph';
-import { format } from 'date-fns';
 import 'chartjs-adapter-moment';
 
-const date = new Date();
-
-import { Patient, PatientDetailsProps } from '@/components/interfaces';
+import { Patient, PatientProps } from '@/components/interfaces';
 type DataPoint = { date: Date; value: number };
 
 function populateArrays(
@@ -57,7 +53,7 @@ function populateArrays(
   });
 }
 
-export default function PatientDetails({ patientId, patientData }: PatientDetailsProps) {
+export default function PatientDetails({ patientData }: PatientProps) {
   const router = useRouter();
 
     const formatSeverity = (severity: number) => `${severity.toFixed(2)}%`;

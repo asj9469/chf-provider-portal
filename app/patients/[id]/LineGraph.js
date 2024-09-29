@@ -6,13 +6,7 @@ import 'chartjs-adapter-moment';
 
 ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, Title, TimeScale);
 
-interface LineGraphProps {
-  data: { date: Date; value: number }[];
-  label: string;
-  color: string;
-}
-
-const LineGraph: React.FC<LineGraphProps> = ({ data, label, color }) => {
+const LineGraph = ({ data, label, color }) => {
   const chartData = {
     labels: data.map(point => point.date.toISOString().split('T')[0]), // Keep this for data mapping
     datasets: [

@@ -2,7 +2,6 @@ import React from 'react'
 import NavigationBar from "@/components/NavigationBar";
 import PatientDetails from './details';
 import connect from '@/lib/mongodb/index'
-import { Patient } from '@/components/interfaces';
 
 export default async function PatientDisplay({ params }: { params: { id: string } }) {
     const patientId = (params.id); // example of how to use id passed in
@@ -29,7 +28,7 @@ export default async function PatientDisplay({ params }: { params: { id: string 
     return (
       <>
         <NavigationBar/>
-        <PatientDetails patientId={patientId} patientData={filteredPatients}/>
+        <PatientDetails patientData={filteredPatients}/>
       </>
     );
 }
