@@ -12,7 +12,6 @@ const getSeverityColor = (severity: number) => {
   return 'text-green-500'; // Very low severity: green
 };
 
-
 export default function PatientsList({patientData}: PatientProps) {
   
   const router = useRouter();
